@@ -16,6 +16,7 @@ import {series} from '../../data';
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   annotations: ApexAnnotations;
+  colors: string[];
   chart: ApexChart;
   xaxis: ApexXAxis;
   dataLabels: ApexDataLabels;
@@ -43,9 +44,29 @@ export class TestChartComponent {
     this.chartOptions = {
       series: [
         {
-          name: "series",
+          name: "Hub 1",
           data: series.monthDataSeries4.prices
+        },
+        {
+          name: "Hub 2",
+          data: series.monthDataSeries4.prices1
         }
+        ,
+        {
+          name: "Hub 3",
+          data: series.monthDataSeries4.prices2
+        }
+        ,
+        {
+          name: "Hub 4",
+          data: series.monthDataSeries4.prices3
+        }
+      ],
+      colors: [
+        "#00E396",
+        "#008FFB",
+        "#FEB019",
+        "#0F4560"
       ],
       chart: {
         height: 350,
@@ -116,9 +137,7 @@ export class TestChartComponent {
             }
           }
         ],
-        points: [
-
-        ]
+        points: []
       },
       dataLabels: {
         enabled: false
