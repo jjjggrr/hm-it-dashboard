@@ -77,7 +77,7 @@ export class TestChartComponent {
       },
       annotations: {
         yaxis: [
-          {
+          /*{
             y: 50,
             borderColor: "#00E396",
             label: {
@@ -89,6 +89,7 @@ export class TestChartComponent {
               text: "Green Zone"
             }
           },
+           */
           {
             y: 0,
             y2: 30,
@@ -107,6 +108,7 @@ export class TestChartComponent {
           }
         ],
         xaxis: [
+          /*
           {
             x: new Date("01 Nov 2022").getTime(),
             strokeDashArray: 0,
@@ -136,6 +138,8 @@ export class TestChartComponent {
               text: "X-axis range"
             }
           }
+
+           */
         ],
         points: []
       },

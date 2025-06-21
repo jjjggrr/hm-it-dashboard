@@ -1,8 +1,11 @@
 import {Component} from '@angular/core';
+import {ChartContainer} from '../../../charts/chart-container/chart-container';
 
 @Component({
   selector: 'app-default',
-  imports: [],
+  imports: [
+    ChartContainer
+  ],
   templateUrl: './default.html',
   styleUrl: './default.css'
 })
