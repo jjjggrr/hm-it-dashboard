@@ -5,3 +5,7 @@
   width: 100%;
   position: relative;
 }
+.c-card-chart-container-info {
+  border: 2px solid #ff0000;
+  background-color: #fff0f0;
+}

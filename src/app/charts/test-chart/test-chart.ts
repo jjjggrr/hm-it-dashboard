@@ -1,5 +1,4 @@
 import {Component, ViewChild} from '@angular/core';
-
 import {
   ChartComponent,
   ApexAxisChartSeries,
@@ -9,7 +8,7 @@ import {
   ApexTitleSubtitle,
   ApexStroke,
   ApexGrid,
-  ApexAnnotations, NgApexchartsModule
+  ApexAnnotations
 } from "ng-apexcharts";
 import {series} from '../../data';
 
