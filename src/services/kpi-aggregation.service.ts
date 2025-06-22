@@ -11,6 +11,15 @@ const MAX_VALUES = {
   LeadTimeForFeatures: 26, // 6 months in weeks
   AverageAPIResponseTime: 2000, // 2 seconds in ms
 };
+const lowerIsBetterMetrics: (keyof typeof allSeriesData)[] = [
+  'errorRate',
+  'MTR',
+  'CFR',
+  'DownTime',
+  'LeadTimeForFeatures',
+  'QADetectRate',
+  'AverageAPIResponseTime'
+];
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -21,38 +30,46 @@ export class KpiAggregationService {
 
   constructor() { }
 
-  private normalize(value: number | string, metric: keyof typeof allSeriesData): number {
-    const dataInfo = allSeriesData[metric];
-    if (typeof value === 'string') {
-      // Handle SoftwareQuality ratings
-      const qualityMap: { [key: string]: number } = { 'A': 100, 'B': 75, 'C': 50, 'D': 25, 'F': 0 };
-      return qualityMap[value] || 0;
-    }
+  private normalize(value: number, metric: keyof typeof allSeriesData): number {
+    const unitInfo = allSeriesData[metric].Unit;
+    const critical = unitInfo.CriticalLimit as number;
+    const target = unitInfo.Target as number;
+    const warningLimit = (unitInfo as any).WarningLimit;
+    const warningScore = (unitInfo as any).WarningScore;
+    const isLowerBetter = lowerIsBetterMetrics.includes(metric);
 
-    switch (metric) {
-      // Higher is better
-      case 'DeploymentFrequency':
-      case 'AutomatedTestCoverage':
-      case 'BuildSuccessRate':
-      case 'QADetectRate':
-        return Math.min(100, (value / 100) * 100); // Assuming %
-      case 'AcceptanceRate': // 1-5 stars
-        return (value - 1) / 4 * 100;
-
-      // Lower is better
-      case 'errorRate':
-      case 'CFR':
-      case 'DownTime':
-        return 100 - value; // Assuming %
-      case 'MTR':
-        return 100 * (1 - Math.min(value, MAX_VALUES.MTR) / MAX_VALUES.MTR);
-      case 'LeadTimeForFeatures':
-        return 100 * (1 - Math.min(value, MAX_VALUES.LeadTimeForFeatures) / MAX_VALUES.LeadTimeForFeatures);
-      case 'AverageAPIResponseTime':
-        return 100 * (1 - Math.min(value, MAX_VALUES.AverageAPIResponseTime) / MAX_VALUES.AverageAPIResponseTime);
-      
-      default:
-        return 0;
+    // If a WarningLimit is defined, use the more advanced two-part scale
+    if (warningLimit !== undefined && warningScore !== undefined) {
+      if (isLowerBetter) {
+        // Lower is better (e.g., error rate)
+        if (value <= target) return 100;
+        if (value >= critical) return 0;
+        if (value <= warningLimit) { // In the "good" zone (between target and warning)
+          return warningScore + ((warningLimit - value) / (warningLimit - target)) * (100 - warningScore);
+        } else { // In the "warning" zone (between warning and critical)
+          return ((critical - value) / (critical - warningLimit)) * warningScore;
+        }
+      } else {
+        // Higher is better (e.g., acceptance rate)
+        if (value >= target) return 100;
+        if (value <= critical) return 0;
+        if (value >= warningLimit) { // In the "good" zone
+          return warningScore + ((value - warningLimit) / (target - warningLimit)) * (100 - warningScore);
+        } else { // In the "warning" zone
+          return ((value - critical) / (warningLimit - critical)) * warningScore;
+        }
+      }
+    } else {
+      // Otherwise, fall back to the original single-linear-scale logic
+      if (isLowerBetter) {
+        if (value <= target) return 100;
+        if (value >= critical) return 0;
+        return 100 - (((value - target) / (critical - target)) * 100);
+      } else {
+        if (value >= target) return 100;
+        if (value <= critical) return 0;
+        return ((value - critical) / (target - critical)) * 100;
+      }
     }
   }
 
@@ -67,7 +84,7 @@ export class KpiAggregationService {
         normalizedData[metric][hub] = {};
         metricData[hub].forEach((value: string | number, index: number) => {
           const month = MONTHS[index];
-          normalizedData[metric][hub][month] = this.normalize(value, metric);
+          normalizedData[metric][hub][month] = this.normalize(Number(value), metric);
         });
       });
     });

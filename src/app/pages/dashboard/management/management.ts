@@ -33,9 +33,9 @@ export type ChartOptions = {
 
 const TOTAL_AGGREGATE_THRESHOLD = 60;
 const ALL_HUBS_THRESHOLD = 60;
-const EFFICIENCY_THRESHOLD = 65;
-const RELIABILITY_THRESHOLD = 75;
-const SATISFACTION_THRESHOLD = 55;
+const EFFICIENCY_THRESHOLD = 60;
+const RELIABILITY_THRESHOLD = 60;
+const SATISFACTION_THRESHOLD = 60;
 
 @Component({
   selector: 'app-management',

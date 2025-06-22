@@ -63,34 +63,23 @@ export class TestChartComponent implements OnInit {
     const seriesData = (Object.keys(chartMetric.Data) as Array<keyof typeof chartMetric.Data>).map(hub => ({
       name: hub as string,
       data: chartMetric.Data[hub].map(v => {
-        // Handle SoftwareQuality ratings by mapping them to numbers
-        if (this.dataKey === 'SoftwareQuality' && typeof v === 'string') {
-          const qualityMap: { [key: string]: number } = { 'A': 4, 'B': 3, 'C': 2, 'D': 1 };
-          return qualityMap[v] || 0;
-        }
+        // The data is now always a number, so direct conversion is fine.
         return Number(v);
       })
     }));
 
     // Determine if the metric's most recent value is critical
-    const threshold = chartMetric.CriticalLimit;
+    const threshold = chartMetric.Unit.CriticalLimit;
     const isLowerBetter = lowerIsBetterMetrics.includes(this.dataKey);
     let critical = false;
 
-    if (this.dataKey === 'SoftwareQuality') {
-        const qualityMap: { [key: string]: number } = { 'A': 4, 'B': 3, 'C': 2, 'D': 1 };
-        const criticalValue = qualityMap[threshold as 'D'];
-        critical = seriesData.some(series => {
-            const lastValue = series.data[series.data.length - 1];
-            return lastValue <= criticalValue;
-        });
-    } else {
-        critical = seriesData.some(series => {
-            const lastValue = series.data[series.data.length - 1];
-            return isLowerBetter ? lastValue > (threshold as number) : lastValue < (threshold as number);
-        });
-    }
-    this.isCritical.emit(critical);
+    critical = seriesData.some(series => {
+        const lastValue = series.data[series.data.length - 1];
+        // A value equal to the threshold is now correctly flagged as critical.
+        return isLowerBetter ? lastValue >= (threshold as number) : lastValue <= (threshold as number);
+    });
+    // Make emission asynchronous to avoid change detection issues
+    setTimeout(() => this.isCritical.emit(critical));
 
 
     this.chartOptions = {
@@ -159,25 +148,18 @@ export class TestChartComponent implements OnInit {
         let y_end = 0;
         let threshold_line = 0;
 
-        if (this.dataKey === 'SoftwareQuality') {
-            const qualityMap: { [key: string]: number } = { 'A': 4, 'B': 3, 'C': 2, 'D': 1 };
-            threshold_line = qualityMap[threshold as 'D'];
+        // The generic logic now handles all cases correctly.
+        threshold_line = threshold as number;
+        if (isLowerBetter) {
+            // Bad area is above the threshold
+            y_start = threshold_line;
+            // Set y_end to a very large number to extend the annotation to the top of the chart
+            y_end = Number.MAX_SAFE_INTEGER;
+        } else {
+            // Bad area is below the threshold
             y_start = 0;
             y_end = threshold_line;
-        } else {
-            threshold_line = threshold as number;
-            if (isLowerBetter) {
-                // Bad area is above the threshold
-                y_start = threshold_line;
-                const maxDataValue = Math.max(...seriesData.flatMap(s => s.data));
-                y_end = maxDataValue > threshold_line ? maxDataValue * 1.1 : threshold_line * 1.2;
-            } else {
-                // Bad area is below the threshold
-                y_start = 0;
-                y_end = threshold_line;
-            }
         }
-
         this.chartOptions.annotations = {
             yaxis: [
                 {
