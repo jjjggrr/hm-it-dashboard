@@ -9,7 +9,7 @@ export const series = {
       Hub3: [8.5, 12.1, 7.9, 15.3, 5.4, 29.8, 11.2, 6.7, 9.1, 4.3, 14.5, 8.8],
       Hub4: [0.1, 0.3, 0.2, 1.1, 0.5, 0.8, 2.3, 0.4, 0.6, 1.5, 0.7, 0.9],
     },
-    TimeUnits: ["T", "W", "M", "Y"],
+    TimeUnits: ["D", "W", "M", "Y"],
     DefaultUnit: "W",
     CriticalLimit: 30, //30-100
   },
@@ -31,7 +31,7 @@ export const series = {
         6.7, 18.2, 40.3, 27.4, 52.1, 3.9, 34.8, 13.5, 46.7, 24.6, 39.1, 57.2,
       ],
     },
-    TimeUnits: ["T", "W", "M", "Y"],
+    TimeUnits: ["D", "W", "M", "Y"],
     DefaultUnit: "W",
     CriticalLimit: 60, // 60 +
   },
@@ -72,9 +72,8 @@ export const series = {
     CriticalLimit: 5, // 5 - 100
   },
   DeploymentFrequency: {
-    Unit: {
-      Name: "Deployments per Week and Team",
-    },
+    Unit: { Name: "Deployments per Week and Team", Type: "Number",}, 
+    CriticalLimit: 2.5, // 0 - 2.5
     Data: {
       Hub1: [5.6, 12.3, 8.1, 22.4, 15.7, 4.9, 18.2, 29.3, 7.5, 11.0, 34.1, 9.8],
       Hub2: [
@@ -85,7 +84,6 @@ export const series = {
     },
     TimeUnits: ["W", "M", "Y"],
     DefaultUnit: "W",
-    CriticalLimit: 2.5, // 0 - 2.5
   },
   SoftwareQuality: {
     Unit: {

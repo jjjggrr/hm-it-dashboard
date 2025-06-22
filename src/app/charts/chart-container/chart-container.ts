@@ -1,20 +1,23 @@
-import { Component } from '@angular/core';
-import {TestChartComponent} from '../test-chart/test-chart';
-import {NgClass} from '@angular/common';
+import { Component, Input } from '@angular/core';
+import { TestChartComponent } from '../test-chart/test-chart';
+import { CommonModule } from '@angular/common';
+import { series } from '../../test-data';
 
 @Component({
   selector: 'app-chart-container',
+  standalone: true,
   imports: [
     TestChartComponent,
-    NgClass
+    CommonModule
   ],
   templateUrl: './chart-container.html',
   styleUrl: './chart-container.css'
 })
 export class ChartContainer {
-  public randomNumber = Math.floor(Math.random() * 100);
+  @Input() dataKey: keyof typeof series = 'errorRate';
+  public isCritical = false;
 
-  public isEven(): boolean {
-    return this.randomNumber % 2 === 0;
+  onCriticalStateChange(critical: boolean) {
+    this.isCritical = critical;
   }
 }

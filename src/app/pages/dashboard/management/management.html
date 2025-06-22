@@ -1,152 +1,125 @@
-<h1 style="text-align: center;">Management Dashboard
-  <br>
-  <span style="color: #4e4e4e; font-weight: bold;">
-    HUB 1</span>
-  <span class="badge text-bg-secondary">Spain</span>
+<h1 style="text-align: center;">Management Dashboard</h1>
 
-</h1>
-
-
-
-<div class="card m-5">
+<!-- Total Aggregated Score Chart -->
+<div class="card m-5" *ngIf="totalAggregateScoreOptions && totalAggregateStats" [ngClass]="{'c-card-chart-container-info': totalAggregateIsCritical}">
   <div class="card-body">
     <div class="row align-items-center">
       <div class="col-md-10">
         <apx-chart
-          #chart
-          [series]="chartOptions.series"
-          [chart]="chartOptions.chart"
-          [xaxis]="chartOptions.xaxis"
-          [dataLabels]="chartOptions.dataLabels"
-          [grid]="chartOptions.grid"
-          [stroke]="chartOptions.stroke"
-          [title]="chartOptions.title"
-          [labels]="chartOptions.labels"
-          [annotations]="chartOptions.annotations"
-          [colors]="chartOptions.colors"
+          [series]="totalAggregateScoreOptions.series"
+          [chart]="totalAggregateScoreOptions.chart"
+          [xaxis]="totalAggregateScoreOptions.xaxis"
+          [yaxis]="totalAggregateScoreOptions.yaxis"
+          [title]="totalAggregateScoreOptions.title"
+          [stroke]="totalAggregateScoreOptions.stroke"
+          [grid]="totalAggregateScoreOptions.grid"
+          [legend]="totalAggregateScoreOptions.legend"
+          [annotations]="totalAggregateScoreOptions.annotations"
         ></apx-chart>
       </div>
       <div class="col-md-2 d-flex flex-column align-items-center justify-content-center text-center">
-        <!-- Zeiteinheiten -->
-        <ol class="breadcrumb" style="--bs-breadcrumb-divider: '|'; margin-bottom: 0; padding-left: 15px;">
-          <li class="breadcrumb-item"><a href="#">D</a></li>
-          <li class="breadcrumb-item"><a href="#">W</a></li>
-          <li class="breadcrumb-item"><a href="#">M</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Y</li>
-        </ol>
-        <hr class="w-75 my-1">
-        <i class="bi bi-arrow-up-right text-success ms-2 fs-1" style="font-size: 3em;"></i>
-        <!-- Wert 1 -->
+        <i class="bi fs-1" [ngClass]="{'bi-arrow-up-right text-success': totalAggregateStats.change >= 0, 'bi-arrow-down-right text-danger': totalAggregateStats.change < 0}"></i>
         <div class="fs-4 fw-semibold mb-1">
-          +33.2
+          {{ totalAggregateStats.current.toFixed(1) }}
         </div>
-        <!-- Wert 2 mit Icon -->
         <div class="mb-1">
-          <span class="fs-5 fw-semibold">+33%</span>
-
+          <span class="fs-5 fw-semibold" [ngClass]="{'text-success': totalAggregateStats.change >= 0, 'text-danger': totalAggregateStats.change < 0}">
+            {{ totalAggregateStats.change >= 0 ? '+' : '' }}{{ totalAggregateStats.change.toFixed(1) }}
+            ({{ totalAggregateStats.changePercent.toFixed(0) }}%)
+          </span>
         </div>
-        <!-- Wert 3 -->
-        <div class="fs-6 mb-1">23.123</div>
         <hr class="w-75 my-1">
-
-        <!-- Drei weitere Werte -->
-        <div class="d-flex justify-content-center gap-3 mb-1">
-          <div class="fs-6">1 Jahres Hoch</div>
-          <div class="fs-6">35.93</div>
+        <div class="d-flex justify-content-between w-75 mb-1">
+          <div class="fs-6">1 Year High</div>
+          <div class="fs-6 fw-semibold">{{ totalAggregateStats.high.toFixed(1) }}</div>
         </div>
-        <div class="fs-6">1 Jahres Hoch</div>
-        <div class="fs-6">1 Jahres Tief</div>
+        <div class="d-flex justify-content-between w-75">
+          <div class="fs-6">1 Year Low</div>
+          <div class="fs-6 fw-semibold">{{ totalAggregateStats.low.toFixed(1) }}</div>
+        </div>
         <hr class="w-75 my-1">
         <div class="fs-6"><a href="#">All Hubs</a></div>
-        <i class="bi bi-info-circle ms-1"
-           style="cursor:pointer;"
-           title="Mehr Infos"
-           (click)="showInfo('wert1')"></i>
       </div>
     </div>
   </div>
 </div>
-<div class="card m-5">
+
+<!-- All Hubs Score Chart -->
+<div class="card m-5" *ngIf="allHubsScoreOptions" [ngClass]="{'c-card-chart-container-info': allHubsIsCritical}">
   <div class="card-body">
-    <div class="row align-items-center">
-      <div class="col-md-10">
-        <apx-chart
-          #chart
-          [series]="chartOptions.series"
-          [chart]="chartOptions.chart"
-          [xaxis]="chartOptions.xaxis"
-          [dataLabels]="chartOptions.dataLabels"
-          [grid]="chartOptions.grid"
-          [stroke]="chartOptions.stroke"
-          [title]="chartOptions.title"
-          [labels]="chartOptions.labels"
-          [annotations]="chartOptions.annotations"
-          [colors]="chartOptions.colors"
-        ></apx-chart>
-      </div>
-      <div class="col-md-2 d-flex flex-column align-items-center justify-content-center text-center">
-        <!-- Zeiteinheiten -->
-        <ol class="breadcrumb" style="--bs-breadcrumb-divider: '|'; margin-bottom: 0; padding-left: 15px;">
-          <li class="breadcrumb-item"><a href="#">D</a></li>
-          <li class="breadcrumb-item"><a href="#">W</a></li>
-          <li class="breadcrumb-item"><a href="#">M</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Y</li>
-        </ol>
-        <hr class="w-75 my-1">
-        <i class="bi bi-arrow-up-right text-success ms-2 fs-1" style="font-size: 3em;"></i>
-        <!-- Wert 1 -->
-        <div class="fs-4 fw-semibold mb-1">
-          +33.2
-        </div>
-        <!-- Wert 2 mit Icon -->
-        <div class="mb-1">
-          <span class="fs-5 fw-semibold">+33%</span>
-
-        </div>
-        <!-- Wert 3 -->
-        <div class="fs-6 mb-1">23.123</div>
-        <hr class="w-75 my-1">
-
-        <!-- Drei weitere Werte -->
-        <div class="d-flex justify-content-center gap-3 mb-1">
-          <div class="fs-6">1 Jahres Hoch</div>
-          <div class="fs-6">35.93</div>
-        </div>
-        <div class="fs-6">1 Jahres Hoch</div>
-        <div class="fs-6">1 Jahres Tief</div>
-        <hr class="w-75 my-1">
-        <div class="fs-6"><a href="#">All Hubs</a></div>
-        <i class="bi bi-info-circle ms-1"
-           style="cursor:pointer;"
-           title="Mehr Infos"
-           (click)="showInfo('wert1')"></i>
-      </div>
-    </div>
+    <apx-chart
+      [series]="allHubsScoreOptions.series"
+      [chart]="allHubsScoreOptions.chart"
+      [xaxis]="allHubsScoreOptions.xaxis"
+      [yaxis]="allHubsScoreOptions.yaxis"
+      [title]="allHubsScoreOptions.title"
+      [stroke]="allHubsScoreOptions.stroke"
+      [grid]="allHubsScoreOptions.grid"
+      [legend]="allHubsScoreOptions.legend"
+      [annotations]="allHubsScoreOptions.annotations"
+    ></apx-chart>
   </div>
 </div>
 
-
-<div class="container-fluid">
-  <div class="row" >
-    <div class="col" >
-      <app-chart-container></app-chart-container>
+<!-- Section for Aggregated Category Scores -->
+<div class="container-fluid mt-4">
+    <h3 class="ms-3">Aggregated KPI Categories</h3>
+    <div class="row">
+        <!-- Efficiency Chart -->
+       <div class="col-12 col-lg-4 mb-4" *ngIf="efficiencyScoreOptions">
+            <div class="card h-100" [ngClass]="{'c-card-chart-container-info': efficiencyIsCritical}">
+                <div class="card-body">
+                    <apx-chart
+                        [series]="efficiencyScoreOptions.series"
+                        [chart]="efficiencyScoreOptions.chart"
+                        [xaxis]="efficiencyScoreOptions.xaxis"
+                        [yaxis]="efficiencyScoreOptions.yaxis"
+                        [title]="efficiencyScoreOptions.title"
+                        [stroke]="efficiencyScoreOptions.stroke"
+                        [grid]="efficiencyScoreOptions.grid"
+                        [annotations]="efficiencyScoreOptions.annotations"
+                    ></apx-chart>
+                </div>
+            </div>
+        </div>
+        <!-- Reliability Chart -->
+        <div class="col-12 col-lg-4 mb-4" *ngIf="reliabilityScoreOptions">
+            <div class="card h-100" [ngClass]="{'c-card-chart-container-info': reliabilityIsCritical}">
+                <div class="card-body">
+                    <apx-chart
+                        [series]="reliabilityScoreOptions.series"
+                        [chart]="reliabilityScoreOptions.chart"
+                        [xaxis]="reliabilityScoreOptions.xaxis"
+                        [yaxis]="reliabilityScoreOptions.yaxis"
+                        [title]="reliabilityScoreOptions.title"
+                        [stroke]="reliabilityScoreOptions.stroke"
+                        [grid]="reliabilityScoreOptions.grid"
+                        [annotations]="reliabilityScoreOptions.annotations"
+                    ></apx-chart>
+                </div>
+            </div>
+        </div>
+        <!-- Satisfaction Chart -->
+        <div class="col-12 col-lg-4 mb-4" *ngIf="satisfactionScoreOptions">
+            <div class="card h-100" [ngClass]="{'c-card-chart-container-info': satisfactionIsCritical}">
+                <div class="card-body">
+                    <apx-chart
+                        [series]="satisfactionScoreOptions.series"
+                        [chart]="satisfactionScoreOptions.chart"
+                        [xaxis]="satisfactionScoreOptions.xaxis"
+                        [yaxis]="satisfactionScoreOptions.yaxis"
+                        [title]="satisfactionScoreOptions.title"
+                        [stroke]="satisfactionScoreOptions.stroke"
+                        [grid]="satisfactionScoreOptions.grid"
+                        [annotations]="satisfactionScoreOptions.annotations"
+                    ></apx-chart>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col">
-      <app-chart-container></app-chart-container>
-    </div>
-    <div class="col">
-      <app-chart-container></app-chart-container>
-    </div>
-  </div>
 </div>
 
-
-
-
-
-
-
-
+<!-- Your existing modal -->
 <div class="modal fade" #ModalInfo tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -161,8 +134,3 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
       </div>
     </div>
-  </div>
-</div>
-
-
-
