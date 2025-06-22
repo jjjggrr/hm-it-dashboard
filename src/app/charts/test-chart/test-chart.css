@@ -1,0 +1,27 @@
+.apexcharts-custom-icon {
+    cursor: pointer;
+    width: auto !important;
+    padding: 0 6px;
+    margin: 0 2px;
+}
+
+.time-unit-btn {
+    font-size: 12px;
+    font-weight: 600;
+    color: #888ea8;
+}
+
+.apexcharts-custom-icon:hover .time-unit-btn {
+    color: #333;
+}
+
+/* Styles for the new trend arrow icon */
+.trend-icon-wrapper {
+    cursor: default !important; /* Make the arrow not look clickable */
+}
+
+.trend-arrow {
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 1;
+}

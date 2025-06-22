@@ -24,6 +24,7 @@ export type ChartOptions = {
   labels?: string[];
   stroke: ApexStroke;
   title: ApexTitleSubtitle;
+  subtitle: ApexTitleSubtitle;
   responsive?: ApexResponsive[];
 };
 
@@ -81,6 +82,30 @@ export class TestChartComponent implements OnInit {
     // Make emission asynchronous to avoid change detection issues
     setTimeout(() => this.isCritical.emit(critical));
 
+    // Calculate overall trend for the arrow indicator
+    let totalLastValue = 0;
+    let totalPreviousValue = 0;
+    seriesData.forEach(series => {
+        if (series.data.length > 1) {
+            totalLastValue += series.data[series.data.length - 1];
+            totalPreviousValue += series.data[series.data.length - 2];
+        } else if (series.data.length === 1) {
+            totalLastValue += series.data[0];
+            totalPreviousValue += series.data[0]; // Assume no change if only one point
+        }
+    });
+
+    let trendIcon = '→';
+    let trendColor = '#FEB019'; // Orange for sideways/no change
+    const trendDifference = totalLastValue - totalPreviousValue;
+
+    if (trendDifference > 0) { // Value went up
+        trendIcon = '↗';
+        trendColor = isLowerBetter ? '#E91E63' : '#00E396'; // Red if up is bad, else Green
+    } else if (trendDifference < 0) { // Value went down
+        trendIcon = '↘';
+        trendColor = isLowerBetter ? '#00E396' : '#E91E63'; // Green if down is good, else Red
+    }
 
     this.chartOptions = {
       series: seriesData,
@@ -90,6 +115,19 @@ export class TestChartComponent implements OnInit {
         type: 'line',
         zoom: {
           enabled: false
+        },
+        toolbar: {
+          show: true, // Show the toolbar
+          tools: {
+              download: false, // Hide the default download button
+              selection: false,
+              zoom: false,
+              zoomin: false,
+              zoomout: false,
+              pan: false,
+              reset: false,
+              // Add our custom buttons
+          }
         }
       },
       colors: [
@@ -102,11 +140,27 @@ export class TestChartComponent implements OnInit {
         enabled: false
       },
       stroke: {
-        curve: "straight"
+        curve: "smooth"
       },
       title: {
         text: `${this.formatTitle(this.dataKey)} (${chartMetric.Unit.Name})`,
-        align: "left"
+        align: "left",
+        style: {
+          fontSize: "20px"
+        }
+      },
+      subtitle: { // This adds the trend arrow
+            text: trendIcon,
+            align: 'right',
+            margin: 5,
+            offsetX: -20,
+            offsetY: 5,
+            floating: true,
+            style: {
+                fontSize: '28px',
+                fontWeight: 'bold',
+                color: trendColor
+            }
       },
       grid: {
         padding: {

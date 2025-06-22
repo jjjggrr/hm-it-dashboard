@@ -32,43 +32,28 @@ export class KpiAggregationService {
 
   private normalize(value: number, metric: keyof typeof allSeriesData): number {
     const unitInfo = allSeriesData[metric].Unit;
+    const failure = unitInfo.FailureLimit as number;
     const critical = unitInfo.CriticalLimit as number;
     const target = unitInfo.Target as number;
-    const warningLimit = (unitInfo as any).WarningLimit;
-    const warningScore = (unitInfo as any).WarningScore;
     const isLowerBetter = lowerIsBetterMetrics.includes(metric);
 
-    // If a WarningLimit is defined, use the more advanced two-part scale
-    if (warningLimit !== undefined && warningScore !== undefined) {
-      if (isLowerBetter) {
-        // Lower is better (e.g., error rate)
-        if (value <= target) return 100;
-        if (value >= critical) return 0;
-        if (value <= warningLimit) { // In the "good" zone (between target and warning)
-          return warningScore + ((warningLimit - value) / (warningLimit - target)) * (100 - warningScore);
-        } else { // In the "warning" zone (between warning and critical)
-          return ((critical - value) / (critical - warningLimit)) * warningScore;
-        }
-      } else {
-        // Higher is better (e.g., acceptance rate)
-        if (value >= target) return 100;
-        if (value <= critical) return 0;
-        if (value >= warningLimit) { // In the "good" zone
-          return warningScore + ((value - warningLimit) / (target - warningLimit)) * (100 - warningScore);
-        } else { // In the "warning" zone
-          return ((value - critical) / (warningLimit - critical)) * warningScore;
-        }
+    if (isLowerBetter) {
+      // For metrics where lower values are better (e.g., errorRate)
+      if (value <= target) return 100;
+      if (value >= failure) return 0;
+      if (value <= critical) { // In the "good" zone (between target and critical)
+        return 60 + ((critical - value) / (critical - target)) * 40;
+      } else { // In the "warning" zone (between critical and failure)
+        return ((failure - value) / (failure - critical)) * 60;
       }
     } else {
-      // Otherwise, fall back to the original single-linear-scale logic
-      if (isLowerBetter) {
-        if (value <= target) return 100;
-        if (value >= critical) return 0;
-        return 100 - (((value - target) / (critical - target)) * 100);
-      } else {
-        if (value >= target) return 100;
-        if (value <= critical) return 0;
-        return ((value - critical) / (target - critical)) * 100;
+      // For metrics where higher values are better (e.g., acceptance rate)
+      if (value >= target) return 100;
+      if (value <= failure) return 0;
+      if (value >= critical) { // In the "good" zone (between critical and target)
+        return 60 + ((value - critical) / (target - critical)) * 40;
+      } else { // In the "warning" zone (between failure and critical)
+        return ((value - failure) / (critical - failure)) * 60;
       }
     }
   }

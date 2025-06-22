@@ -190,7 +190,10 @@ export class ManagementComponent implements AfterViewInit, OnInit {
             },
             title: {
                 text: title,
-                align: 'left'
+                align: 'left',
+                style: {
+                    fontSize: '22px',
+                }
             },
             xaxis: {
                 categories: categories,
