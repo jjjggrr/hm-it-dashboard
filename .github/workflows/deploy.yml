@@ -1,0 +1,45 @@
+name: Deploy Angular App to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # Or your default branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          # CHANGED: Path to package-lock.json is at the root
+          cache-dependency-path: 'package-lock.json'
+
+      - name: Install Dependencies
+        # REMOVED: working-directory, as package.json is at the root
+        run: npm ci
+
+      - name: Build Angular App
+        # CHANGED: The build command is different for Angular and requires a base-href
+        # IMPORTANT: You MUST replace <your-repo-name> with your actual GitHub repository name!
+        run: npm run build -- --configuration production --base-href /hm-it-dashbord/
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # CHANGED: The output path for an Angular build is different
+          path: ./dist/hm-it-dashbord/browser/
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
