@@ -28,13 +28,13 @@ jobs:
         run: npm ci
 
       - name: Build Angular App
-        run: npm run build -- --configuration production --base-href /hm-it-dashbord/
+        run: npm run build -- --configuration production --base-href /hm-it-dashboard/
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           # CORRECTED: The path must match the actual output directory name.
-          path: ./dist/hm-it-dashbord/browser/
+          path: ./dist/itdashbord/browser/
 
       - name: Deploy to GitHub Pages
         id: deployment
