@@ -146,7 +146,7 @@ export const series = {
   },
   QADetectRate: {
     Unit: {
-      Name: "Items per Week and Team",
+      Name: "Items/Week",
       FailureLimit: 10,   // 10 items is 0 points
       CriticalLimit: 5,   // 5 items is 60 points
       Target: 0,          // 0 items is 100 points
