@@ -33,7 +33,8 @@ jobs:
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist/hm-it-dashbord/browser/
+          # CORRECTED: The path must match the actual output directory name.
+          path: ./dist/hm-it-dashboard/browser/
 
       - name: Deploy to GitHub Pages
         id: deployment
