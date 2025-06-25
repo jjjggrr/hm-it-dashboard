@@ -65,7 +65,7 @@ export const series = {
   },
   DeploymentFrequency: {
     Unit: { 
-      Name: "Deployments per Week and Team", 
+      Name: "Depl. per Team", 
       Type: "Number",
       FailureLimit: 0,    // 0 is 0 points
       CriticalLimit: 2.5, // 2.5 is 60 points
